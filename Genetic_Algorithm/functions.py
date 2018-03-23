@@ -1,4 +1,3 @@
-import copy
 import numpy as np
 import math
 
@@ -34,7 +33,7 @@ def reproduce(father, mother):
     child = mother
     for i in range(0, sizeParents):
         f_m = np.random.randint(2)
-        if f_m :
+        if f_m:
             child[i] = father[i]
     return child
 
@@ -44,6 +43,7 @@ def mutate(individual):
         if np.random.uniform(0, 1) > 0.995:
             individual[i] = np.random.randint(2)
     return individual
+
 
 def nextTimeEvolution(worldGrid, rule):
     neighboursGrid = calculateNeighbours(worldGrid)
@@ -86,3 +86,11 @@ def calculateNeighbours(worldGrid):
                   math.pow(2, 8) * np.roll(worldGrid, [-1, -1], axis=[0, 1]))
 
     return neighbours.astype(int)
+
+
+def getFitFunction(initialGrid, individual):  # , gridSize):
+    for t in range(0, 100):  # time evol all the worlds
+        neighboursGrid = calculateNeighbours(initialGrid)
+        initialGrid = individual[neighboursGrid]
+
+    return gradeResult(initialGrid)
