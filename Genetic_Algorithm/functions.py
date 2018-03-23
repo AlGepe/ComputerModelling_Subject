@@ -3,28 +3,30 @@ import numpy as np
 import math
 
 
+'''
 def newGeneration(genPopulation):
     return np.random.randint(2, size=(genPopulation, 512))
+'''
 
 
 def newGeneration(prevGeneration, grades):
     # Create rules
     cutOff = np.median(grades)
-    newGeneration = np.zeros(shape=(prevGeneration.shape))
+    newFlock = np.zeros(shape=(prevGeneration.shape))
     valid = []
     for i in range(0, len(grades)):  # find useful
         if (grades[i] >= cutOff):  # Keep
             valid.append(i)
-            validPerm = copy.deepcopy(valid)
-    for i in range(0, len(newGeneration)):  # find useful
-        if valid :
-            newGeneration[i] = reproduce(prevGeneration[valid.pop()], \
-                                         prevGeneration[valid.pop()])
-        else:
-            randIndex = np.random.randint(len(valiPerm))
-            newGeneration = mutate(valiPerm[randIndex])
 
-    return newGeneration
+    for i in range(0, len(newFlock)):  # find useful
+        if i+2 < len(valid):
+            newFlock[i] = reproduce(prevGeneration[valid[i]],
+                                    prevGeneration[valid[i+1]])
+        else:
+            randIndex = np.random.randint(len(valid))
+            newFlock[i] = mutate(prevGeneration[valid[randIndex]])
+
+    return newFlock
 
 
 def reproduce(father, mother):
@@ -39,7 +41,7 @@ def reproduce(father, mother):
 
 def mutate(individual):
     for i in range(0, len(individual)):
-        if np.random.uniform(0, 1) > 0.8:
+        if np.random.uniform(0, 1) > 0.995:
             individual[i] = np.random.randint(2)
     return individual
 
@@ -55,27 +57,32 @@ def nextTimeEvolution(worldGrid, rule):
 
 def gradeResult(worldGrid):
     grade = np.zeros(worldGrid.shape)
-    firstCheck = (worldGrid == np.roll(worldGrid, 1, axis=0)) or  \
+    firstCheck = (worldGrid == np.roll(worldGrid, 1, axis=0)) +  \
                  (worldGrid == np.roll(worldGrid, 1, axis=1))
     secondCheck = worldGrid == np.roll(worldGrid, [1, 1], axis=[0, 1])
     thirdCheck = worldGrid == np.roll(worldGrid, [1, -1], axis=[0, 1])
+    notFirstCheck = (firstCheck * -1) + 1
+    notSecond = (secondCheck * -1) + 1
+    notThird = (thirdCheck * -1) + 1
+
+    # Calculate points per square
     grade = firstCheck * -3
-    # Positive diagonal points
-    grade += ((not firstCheck) * (8 * secondCheck + thirdCheck))
-    grade -= ((not firstCheck) * (5 * (not secondCheck) + (not thirdCheck)))
+    grade += ((notFirstCheck) * (8 * secondCheck + thirdCheck))
+    grade -= ((notFirstCheck) * (5 * (notSecond) + (notThird)))
 
     # check for up or right neighbours
     return sum(sum(grade))
 
-def calculateNeighbours(worldGrid):
-    neighbours = math.pow(2, 0) * np.roll(worldGrid, [1, 1], axis=[0, 1]) + \
-                 math.pow(2, 1) * np.roll(worldGrid, [1, 0], axis=[0, 1]) + \
-                 math.pow(2, 2) * np.roll(worldGrid, [1, -1], axis=[0, 1]) + \
-                 math.pow(2, 3) * np.roll(worldGrid, [0, 1], axis=[0, 1]) + \
-                 math.pow(2, 4) * np.roll(worldGrid, [0, 0], axis=[0, 1]) + \
-                 math.pow(2, 5) * np.roll(worldGrid, [0, -1], axis=[0, 1]) + \
-                 math.pow(2, 6) * np.roll(worldGrid, [-1, 1], axis=[0, 1]) + \
-                 math.pow(2, 7) * np.roll(worldGrid, [-1, 0], axis=[0, 1]) + \
-                 math.pow(2, 8) * np.roll(worldGrid, [-1, -1], axis=[0, 1])
 
-    return neighbours
+def calculateNeighbours(worldGrid):
+    neighbours = (math.pow(2, 0) * np.roll(worldGrid, [1, 1], axis=[0, 1]) +
+                  math.pow(2, 1) * np.roll(worldGrid, [1, 0], axis=[0, 1]) +
+                  math.pow(2, 2) * np.roll(worldGrid, [1, -1], axis=[0, 1]) +
+                  math.pow(2, 3) * np.roll(worldGrid, [0, 1], axis=[0, 1]) +
+                  math.pow(2, 4) * np.roll(worldGrid, [0, 0], axis=[0, 1]) +
+                  math.pow(2, 5) * np.roll(worldGrid, [0, -1], axis=[0, 1]) +
+                  math.pow(2, 6) * np.roll(worldGrid, [-1, 1], axis=[0, 1]) +
+                  math.pow(2, 7) * np.roll(worldGrid, [-1, 0], axis=[0, 1]) +
+                  math.pow(2, 8) * np.roll(worldGrid, [-1, -1], axis=[0, 1]))
+
+    return neighbours.astype(int)
