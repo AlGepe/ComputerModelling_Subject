@@ -40,7 +40,7 @@ def reproduce(father, mother):
 
 def mutate(individual):
     for i in range(0, len(individual)):
-        if np.random.uniform(0, 1) > 0.995:
+        if np.random.uniform(0, 1) > 0.99:
             individual[i] = np.random.randint(2)
     return individual
 
