@@ -20,14 +20,10 @@ def prepGauss(x_n):
     n = np.linspace(0, n_max, num=M)
     l_values = np.linspace(-4, 4, num=9)
     partSums = np.zeros(100)
-    print(n0)
-    print(m0)
-    print(M)
     for l in l_values:
         tmp = np.square(n-n0 + M*l)
         partSums = partSums + np.exp((-pi/M) * (tmp))
-
-        print(partSums)
+    print(partSums[3])
     psi_n = partSums * np.exp((2j*pi*m0*n)/M)
     prob_dens = psi_n * np.conj(psi_n)
     big_N = sum(prob_dens)
