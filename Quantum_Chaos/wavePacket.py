@@ -33,7 +33,7 @@ def prepGauss(M, x0, p0):
     plt.xlabel('x_n')
     plt.legend(loc=1)
     plt.show()
-    psi_Gm = fft(psi_Gn)
+    psi_Gm = fft(psi_Gn) / np.sqrt(M)
     plt.clf()
     probDens_m = psi_Gm * np.conj(psi_Gm)
     plt.plot(x_n, psi_Gm, '+-', label='Amplitud')
