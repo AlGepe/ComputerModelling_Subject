@@ -48,13 +48,13 @@ def prepGauss(M, x0, p0):
 
 def oneStepFft(psi, K):
     # print(type(psi[0]))
-    print(K)
+    # print(K)
     pi = np.pi
     M = len(psi)
     n = np.arange(M)
-    bigP = np.exp((1j*np.square(n)*pi)/M)
-    bigV = np.exp(-1j*M*K*np.cos((2*pi*n)/M)/2*pi)
-    psi = (bigP * fft(bigP*bigV*psi)) / np.sqrt(M)
+    bigP = np.exp(((1j*pi)/M)*np.square(n))
+    bigV = np.exp((-1j*M*K/(2*pi))*np.cos((2*pi*n)/M))
+    psi = (1 / np.sqrt(M)) * (bigP * fft(bigP*bigV*psi))
     return psi
 
 
@@ -63,12 +63,12 @@ def doIt(M, x0, p0, K, t_steps):
     x_n = (np.arange(M) * 2 * pi) / M
     psi = np.zeros(shape=(t_steps, M), dtype=complex)
     psi[0] = prepGauss(M, x0, p0)
-    plt.show()
+    # plt.show()
     plt.clf()
     plt.plot(x_n, psi[0]*np.conj(psi[0]), 'b+-')
     plt.axis([0, 2*pi, 0, 0.2])
     plt.savefig("Results/wave_packet" + str(0).zfill(3) + ".png")
-    plt.show()
+    # plt.show()
     for t in range(t_steps-1):
         plt.clf()
         psi[t+1] = oneStepFft(psi[t], K)
@@ -78,10 +78,4 @@ def doIt(M, x0, p0, K, t_steps):
         # plt.show()
 
 
-doIt(100, 3, 1.1, 0.1, 20)
-
-
-
-
-
-
+doIt(100, 3, .1, 2.1, 90)
