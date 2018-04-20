@@ -5,32 +5,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 N = 10
-n_sample = 10000
-
-GOE_matrices = createGOE(N, n_sample)
-# print(GOE_matrices.shape)
-PM_matrices = createPM(N, n_sample)
-
-'''
-a = np.array([[1, -2j], [2j, 5]])
-print(a.shape)
-w, v = np.linalg.eigh(a)
-
-print(type(GOE_matrices[0]))
-print(type(np.random.normal(0, 1., size=(N, N))))
-'''
-
-GOE_eigVal, v = np.linalg.eigh(GOE_matrices)  # np.random.normal(0, 1., size=(N, N)))
-PM_eigVal, v = np.linalg.eig(PM_matrices)
+n_sample = 100000
 
 f, axarr = plt.subplots(2, sharex=True)
-n, bins, patches = axarr[0].hist(GOE_eigVal, 50, normed=1,
+GOE_eigVal = np.zeros(shape=(n_sample, N))
+PM_eigVal = np.zeros(shape=(n_sample, N))
+
+for i in range(n_sample):
+    GOE_matrices = createGOE(N)
+    PM_matrices = createPM(N)
+    # print(np.all(PM_matrices == PM_matrices.T))
+
+    GOE_eigVal[i] = np.linalg.eigvalsh(GOE_matrices)
+    PM_eigVal[i]  = np.linalg.eigvalsh(PM_matrices)
+
+n, bins, patches = axarr[0].hist(GOE_eigVal.flatten(), 50, density=True,
         facecolor='green', alpha=0.75)
-axarr[0].plot(bins, wignerGOE(bins, N), 'r-', linewidth=2)
-n, bins, patches = axarr[1].hist(PM_eigVal, 50, normed=1,
+n, bins, patches = axarr[1].hist(PM_eigVal.flatten(), 50, density=True,
         facecolor='green', alpha=0.75)
 axarr[1].plot(bins, wignerPM(bins, N), 'r-', linewidth=2)
+axarr[0].plot(bins, wignerGOE(bins, N), 'r-', linewidth=2)
 
-print(bins)
-
+# print(bins)
 plt.show()
