@@ -1,4 +1,5 @@
 import numpy as np
+# import matplotlib.pyplot as plt
 # The code is  Defect == 0
 #              Cooperate == 1
 
@@ -9,10 +10,10 @@ def getPayOff_loop(decisionGrid, reward):
     for i in range(dim[0]):
         for j in range(dim[1]):
             neighSum = decisionGrid[i+1][j] + decisionGrid[i-1][j] +\
-                    decisionGrid[i+1][j+1] + decisionGrid[i][j+1] +\
-                    decisionGrid[i-1][j+1] + decisionGrid[i+1][j-1] +\
-                    decisionGrid[i][j-1] + decisionGrid[i-1][j-1] +\
-                    decisionGrid[i][j]
+                       decisionGrid[i+1][j+1] + decisionGrid[i][j+1] +\
+                       decisionGrid[i-1][j+1] + decisionGrid[i+1][j-1] +\
+                       decisionGrid[i][j-1] + decisionGrid[i-1][j-1] +\
+                       decisionGrid[i][j]
             if decisionGrid[i][j]:
                 payOff_grid[i][j] = neighSum
             else:
@@ -22,23 +23,37 @@ def getPayOff_loop(decisionGrid, reward):
 
 def updateDecisionGrid(oldDecision, payOff_grid):
     dim = oldDecision.shape
-    newDecision = np.zeros(dim)
-    for i in range(1, dim[0]-1):
-        for j in range(1, dim[1]-1):
-            neighbours = oldDecision[i-1:i+1, j-1:j+1]
-            #print(neighbours)
+    # print(oldDecision)
+    oldDecisionPB = np.zeros(np.asarray(dim) + 2)
+    # inner square
+    oldDecisionPB[1:-1, 1:-1] = oldDecision
+    # top-bottom
+    oldDecisionPB[0:1,  1:-1] = oldDecision[-1:, :]  # top
+    oldDecisionPB[-1:,  1:-1] = oldDecision[:1, :]  # bottom
+    # R-L sides
+    oldDecisionPB[:, 0:1] = oldDecisionPB[:, -2:-1]
+    oldDecisionPB[:, -1:] = oldDecisionPB[:, 1:2]
+    newDecision = np.zeros(oldDecisionPB.shape)
+    for i in range(1, dim[0]+1):
+        for j in range(1, dim[1]+1):
+            neighbours = oldDecisionPB[i-1:i+1, j-1:j+1]
+            # print(neighbours)
             winnerPos = np.unravel_index(neighbours.argmax(), neighbours.shape)
-            newDecision[i][j] = oldDecision[i-1 + winnerPos[0]][j-1+winnerPos[1]]
+            newDecision[i][j] = oldDecisionPB[i-1 + winnerPos[0]][j-1+winnerPos[1]]
 
-    return newDecision
+    # print("old Decision: {0}".format(oldDecision.shape))
+    # print("New Decision Untrimmed: {0}".format(newDecision.shape))
+    # plt.imshow(newDecision, interpolation='nearest', cmap=plt.cm.gray_r)
+    # plt.title("New Decision")
+    # plt.show()
+    return newDecision[1:dim[0] + 1, 1:dim[1] + 1]
 
 
-def getPayOff(decisionGrid, reward):
-    # sum == how many neighbours did C
-    b = 8
+def getPayOff(decisionGrid, reward=8):
+    # sumGrid == how many neighbours did C(ooperate)
     sumGrid = (decisionGrid +
                shiftPB(decisionGrid, [ 1,  1]) +
-               shiftPB(decisionGrid, [ 1,  0]) + 
+               shiftPB(decisionGrid, [ 1,  0]) +
                shiftPB(decisionGrid, [ 1, -1]) +
                shiftPB(decisionGrid, [ 0,  1]) +
                shiftPB(decisionGrid, [ 0, -1]) +
@@ -46,32 +61,31 @@ def getPayOff(decisionGrid, reward):
                shiftPB(decisionGrid, [-1, 0]) +
                shiftPB(decisionGrid, [-1, -1]))
     payOff = sumGrid * decisionGrid  # CC = +1
-    payOff += (decisionGrid == 0) * ((sumGrid) * b)  # DC = b
+    payOff += (decisionGrid == 0) * ((sumGrid) * reward)  # DC = b
     return payOff
 
 
 def shiftPB(original, shift):
-    shifted = np.zeros(original.shape)
+    shifted = np.zeros(original.shape, dtype=type(original[0,0]))
     i = shift[0]
     j = shift[1]
-    if j == 0:
+    if j == 0 and i == 0:
+        return original
+    elif j == 0:
         shifted[i:, :] = original[:-i, :]
-        # shifted[i:, :] = original[i:, -j:]
-        shifted[:i, j:] = original[-i:, j:]
-        #shifted[:i, :] = original[-i:, -j:]
+        shifted[:i, :] = original[-i:, :]
 
     elif i == 0:
-        shifted[i:, j:] = original[:, :-j]
-        shifted[i:, :j] = original[i:, -j:]
-        # shifted[:i, j:] = original[-i:, j:]
-        #shifted[:i, :j] = original[-i:, -j:]
+        shifted[:, j:] = original[:, :-j]
+        shifted[:, :j] = original[:, -j:]
 
     else:
+        # Big Square (for big N and small shifts)
         shifted[i:, j:] = original[:-i, :-j]
-        shifted[i:, :j] = original[i:, -j:]
-        shifted[:i, j:] = original[-i:, j:]
+        # Small Square (for big N and small shifts)
         shifted[:i, :j] = original[-i:, -j:]
+        # 'Bottom slice' for positive i and j
+        shifted[:i, j:] = original[-i:, :-j]
+        # 'Right slide' (for positive i and j)
+        shifted[i:, :j] = original[:-i, -j:]
     return shifted
-    
-
-
