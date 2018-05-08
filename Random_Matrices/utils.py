@@ -44,15 +44,23 @@ def getEnergySpacing(eigen):
 def surmise(eigenDiff):
     size = eigenDiff.shape
     # N = size[smth]
-    N = size[1] * 0
+    N = size[0]
+    indx = int(N/2)
     if N >= 10:
         # do this to each eigen spectrum, ie each matrix
-        s = eigenDiff[int(3.*N/8.):int(5.*N/8.)]
+        surmise = np.zeros(shape=(N, int(3.*N/8.)-int(5.*N/8.)))
     else:
-        indx = int(N/2)
-        s = eigenDiff[indx-1:indx+1]
+        surmise = np.zeros(shape=(N,indx-1-indx+1))
     # s = 1
-    surmise = np.pi * .5 * s * np.exp(-(np.pi/4) * np.square(s))
+
+    for i in range(len(eigenDiff))
+        if N >= 10:
+            # do this to each eigen spectrum, ie each matrix
+            s = eigenDiff[i][int(3.*N/8.):int(5.*N/8.)]
+        else:
+            s = eigenDiff[i][indx-1:indx+1]
+        # s = 1
+        surmise[i] = np.pi * .5 * s * np.exp(-(np.pi/4) * np.square(s))
     return surmise
 
 
