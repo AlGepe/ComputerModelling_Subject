@@ -34,15 +34,28 @@ def updateDecisionGrid(oldDecision, payOff_grid):
     oldDecisionPB[:, 0:1] = oldDecisionPB[:, -2:-1]
     oldDecisionPB[:, -1:] = oldDecisionPB[:, 1:2]
     newDecision = np.zeros(oldDecisionPB.shape)
+
+    payOff_PB = np.zeros(np.asarray(dim) + 2)
+    # inner square
+    payOff_PB[1:-1, 1:-1] = payOff_grid
+    # top-bottom
+    payOff_PB[0:1,  1:-1] = payOff_grid[-1:, :]  # top
+    payOff_PB[-1:,  1:-1] = payOff_grid[:1, :]  # bottom
+    # R-L sides
+    payOff_PB[:, 0:1] = payOff_PB[:, -2:-1]
+    payOff_PB[:, -1:] = payOff_PB[:, 1:2]
+    # print(payOff_PB)
     for i in range(1, dim[0]+1):
         for j in range(1, dim[1]+1):
-            neighbours = oldDecisionPB[i-1:i+2, j-1:j+2]
+            neighbours = payOff_PB[i-1:i+2, j-1:j+2]
+            # print(neighbours)
             # print(neighbours)
             # print(neighbours)
             winnerPos = np.unravel_index(neighbours.argmax(), neighbours.shape)
             # print(neighbours[winnerPos[0], winnerPos[1]])
             # print(winnerPos)
-            newDecision[i][j] = oldDecisionPB[i-1 + winnerPos[0]][j-1+winnerPos[1]]
+            newDecision[i][j] = oldDecisionPB[i-1 + winnerPos[0],
+                                              j-1 + winnerPos[1]]
 
     # print("old Decision: {0}".format(oldDecision.shape))
     # print("New Decision Untrimmed: {0}".format(newDecision.shape))
