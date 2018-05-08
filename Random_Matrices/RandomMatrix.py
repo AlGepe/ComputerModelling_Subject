@@ -28,3 +28,7 @@ axarr[0].plot(bins, wignerGOE(bins, N), 'r-', linewidth=2)
 
 # print(bins)
 plt.show()
+plt.close()
+
+f, axarr = plt.subplots(2, sharex=True)
+# Energy spacing, we have to deal with dimensions of the arrays

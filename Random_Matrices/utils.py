@@ -35,5 +35,26 @@ def wignerPM(E, N):
     # print(np.square(R) - np.square(E))
     return (2 * np.sqrt(np.square(R) - np.square(E)))/(np.pi * R * R)
 
+
 def getEnergySpacing(eigen):
-    return np.diff(np.sort(eigen))
+    preSpacing = np.diff(np.sort(eigen))
+    return preSpacing / np.linalg.norm(preSpacing)
+
+
+def surmise(eigenDiff):
+    size = eigenDiff.shape
+    # N = size[smth]
+    N = size[1] * 0
+    if N >= 10:
+        # do this to each eigen spectrum, ie each matrix
+        s = eigenDiff[int(3.*N/8.):int(5.*N/8.)]
+    else:
+        indx = int(N/2)
+        s = eigenDiff[indx-1:indx+1]
+    # s = 1
+    surmise = np.pi * .5 * s * np.exp(-(np.pi/4) * np.square(s))
+    return surmise
+
+
+def surmisePM(s):
+    return
