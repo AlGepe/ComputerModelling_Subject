@@ -31,4 +31,14 @@ plt.show()
 plt.close()
 
 f, axarr = plt.subplots(2, sharex=True)
+
+GOE_eigDiff = getEnergySpacing(GOE_eigVal)
+PM_eigDiff = getEnergySpacing(PM_eigVal)
+n, bins, patches = axarr[0].hist(GOE_eigDiff.flatten(), 50, density=True,
+                                 facecolor='green', alpha=0.75)
+n, bins, patches = axarr[1].hist(PM_eigDiff.flatten(), 50, density=True,
+                                 facecolor='blue', alpha=0.75)
+axarr[1].plot(bins, surmise(GOE_eigDiff), 'r-', linewidth=2)
+axarr[0].plot(bins, surmise(PM_eigDiff), 'r-', linewidth=2)
+
 # Energy spacing, we have to deal with dimensions of the arrays
