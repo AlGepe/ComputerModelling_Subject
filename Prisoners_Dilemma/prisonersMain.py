@@ -13,28 +13,22 @@ N = (sizeHalf * 2) + 1
 decisionGrid = np.ones(shape=(N, N))
 decisionGrid[sizeHalf][sizeHalf] = 0
 plt.figure(figsize=(10, 10))
-plt.imshow(decisionGrid, interpolation='nearest', cmap=plt.cm.gray_r)
-plt.colorbar()
+plt.imshow(decisionGrid, interpolation='nearest', cmap='gist_stern')
 # print(decisionGrid)
 
 for i in range(200):
     namePO = folder + "Pay_Off_grid_" + str(i)
     nameDec = folder + "Decision_nochange_" + str(i)
-    payOff = u.getPayOff(decisionGrid, 1.94)
-    # print(payOff)
-    # print(payOff)
-    # print(decisionGrid.shape)
+    payOff = u.getPayOff(decisionGrid, 2.08)
     newdecisionGrid = u.updateDecisionGrid(decisionGrid, payOff)
-    # print(decisionGrid.shape)
     plt.imshow(payOff, interpolation='nearest', cmap=plt.cm.gray_r)
-    # plt.show()
-    # plt.show()
-    # plt.savefig(namePO + '.png')
-    # plt.imshow((decisionGrid == newdecisionGrid)*newdecisionGrid, interpolation='nearest', cmap=plt.cm.gray_r)
-    # plt.imshow((decisionGrid != newdecisionGrid)*newdecisionGrid, interpolation='nearest', cmap='Blues')
-    # plt.imshow((decisionGrid != newdecisionGrid)*((-1 * newdecisionGrid) + 1), interpolation='nearest', cmap='Reds')
-    plt.imshow(2 * (decisionGrid + newdecisionGrid ) + (decisionGrid - newdecisionGrid), interpolation='nearest', cmap='seismic')
+    toPlot = ((4 * np.logical_not(decisionGrid) * np.logical_not(newdecisionGrid)) +
+              (1.5 * np.logical_not(decisionGrid) * newdecisionGrid) +
+              (0.25 * decisionGrid * np.logical_not(newdecisionGrid)))
 
+    plt.imshow(toPlot, interpolation='nearest', cmap='gist_stern')
+
+    if i == 1:
+        plt.colorbar()
     decisionGrid = newdecisionGrid
-    # print(decisionGrid)
     plt.savefig(nameDec + '.png')
