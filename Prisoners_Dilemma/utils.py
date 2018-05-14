@@ -65,7 +65,7 @@ def getPayOff(decisionGrid, reward=8):
                shiftPB(decisionGrid, [-1, 1]) +
                shiftPB(decisionGrid, [-1, 0]) +
                shiftPB(decisionGrid, [-1, -1]))
-    payOff = sumGrid * decisionGrid  # CC = +1
+    payOff = sumGrid * decisionGrid * 1.0  # CC = +1
     payOff += (decisionGrid == 0) * ((sumGrid) * reward)  # DC = b
     return payOff
 
