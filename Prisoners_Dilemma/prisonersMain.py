@@ -2,7 +2,7 @@ import os.path
 import numpy as np
 import utils as u
 import matplotlib
-# matplotlib.use('pdf')
+matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 
 folder = os.path.abspath('./') + '/Data/'
@@ -29,8 +29,8 @@ for reward in rewardList:
     plt.clf()
 
     for i in range(steps):
-        namePO = "Pay_Off_grid_{0:.2f}_{1:3d}".format(reward, i)
-        nameDec = "Decision_grid_{0:.2f}_{1:3d}".format(reward, i)
+        namePO = "Pay_Off_grid_{0:.2f}_{1:03d}".format(reward, i)
+        nameDec = "Decision_grid_{0:.2f}_{1:03d}".format(reward, i)
         payOff = u.getPayOff(decisionGrid, reward)
         newdecisionGrid = u.updateDecisionGrid(decisionGrid, payOff)
         plt.figure(0)
@@ -60,11 +60,13 @@ plt.close()
 #=============
 
 steps = 100
-nRewards = 10
-rewardMin = 0.5
-rewardMax = 2.5
+nRewards = 100
+rewardMin = 0.8
+rewardMax = 2.2
 avg4reward = 5
 rewardList = np.linspace(rewardMin, rewardMax, nRewards)
+rewardList[0] = 0.5
+rewardList[nRewards-1] = 2.5
 fPercentaje = np.zeros(shape=rewardList.shape)
 
 for k in range(nRewards):
@@ -78,7 +80,8 @@ for k in range(nRewards):
 
     reward_f = np.zeros(avg4reward)
     for j in range(avg4reward):
-        for i in range(steps):
+        stepsRward = 10 * abs(k - 2.)
+        for i in range(stepsRward):
             # namePO = "Pay_Off_grid_{0:.2f}_{1:3d}".format(rewardList[k], i)
             payOff = u.getPayOff(decisionGrid, rewardList[k])
             newdecisionGrid = u.updateDecisionGrid(decisionGrid, payOff)
@@ -92,7 +95,7 @@ for k in range(nRewards):
                       (1.5 * np.logical_not(decisionGrid) * newdecisionGrid) +
                       (0.25 * decisionGrid * np.logical_not(newdecisionGrid)))
 
-            if i >= steps-5:
+            if i >= stepsRward-5:
                 nameDec = ("Decision_grid_{0:.2f}_{1:3d}".
                            format(rewardList[k], i))
                 plt.figure(1)
@@ -116,6 +119,7 @@ plt.close()
 print("Done")
 plt.figure(figsize=(16, 9))
 plt.plot(rewardList, fPercentaje)
-plt.show()
+plt.axis([0, 3., -1, 101])
+# plt.show()
 plt.savefig(folder + "f_of_b")
 plt.close()
