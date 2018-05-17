@@ -1,5 +1,7 @@
 import numpy as np
-# import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('pdf')
+import matplotlib.pyplot as plt
 # The code is  Defect == 0
 #              Cooperate == 1
 
@@ -94,3 +96,44 @@ def shiftPB(original, shift):
         # 'Right slide' (for positive i and j)
         shifted[i:, :j] = original[:-i, -j:]
     return shifted
+
+def doAll(reward, data):
+    steps = data[0]
+    avg4reward = data[1]
+    N = data[2]
+    folder = data[3]
+    decisionGrid = np.random.choice(2, size=(N, N))
+    plt.figure(0, figsize=(7, 7))
+    plt.clf()
+    plt.figure(1, figsize=(7, 7))
+    plt.clf()
+    stepsRward = int(1. / abs(reward - 2.)) + 50
+    reward_f = np.zeros(avg4reward)
+    for j in range(avg4reward):
+        for i in range(stepsRward):
+            # namePO = "Pay_Off_grid_{0:.2f}_{1:3d}".format(reward, i)
+            payOff = getPayOff(decisionGrid, reward)
+            newdecisionGrid = updateDecisionGrid(decisionGrid, payOff)
+            # plt.figure(0)
+            # plt.imshow(payOff, interpolation='nearest', cmap=plt.cm.gray_r)
+                # plt.colorbar()
+            # plt.savefig(folder + namePO + '.png')
+            toPlot = ((4 * np.logical_not(decisionGrid) *
+                    np.logical_not(newdecisionGrid)) +
+                    (1.5 * np.logical_not(decisionGrid) * newdecisionGrid) +
+                    (0.25 * decisionGrid * np.logical_not(newdecisionGrid)))
+
+            if i >= stepsRward-5:
+                nameDec = ("Decision_grid_{0:.2f}_{1:3d}".
+                        format(reward, i))
+                plt.figure(1)
+                plt.imshow(toPlot, interpolation='nearest', cmap='gist_stern')
+                if i == steps-5:
+                    plt.colorbar()
+                plt.savefig(folder + nameDec + '.png')
+            decisionGrid = newdecisionGrid
+            plt.clf()
+            # i
+        reward_f[j] = sum(sum(np.logical_not(decisionGrid)))
+        # j
+    return np.average(reward_f) * 100 / np.square(N)
