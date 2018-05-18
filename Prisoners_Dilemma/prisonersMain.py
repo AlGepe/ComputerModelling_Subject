@@ -5,10 +5,10 @@ import time
 import numpy as np
 import utils as u
 import matplotlib
-matplotlib.use('pdf')
+# matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 
-folder = os.path.abspath('./') + '/Test/'
+folder = os.path.abspath('./') + '/Data1/'
 
 #===============
 # Common Values
@@ -17,7 +17,7 @@ folder = os.path.abspath('./') + '/Test/'
 t0 = time.time()
 sizeHalf = 100
 N = (sizeHalf * 2) + 1
-steps = 100
+steps = 200
 
 #==================
 #    1st Task
@@ -64,9 +64,10 @@ print("Finished task 1 in {0}seconds".format(t1-t0))
 #=============
 #   2nd Task
 #=============
+folder = os.path.abspath('./') + '/Data2/'
 
 steps = 100
-nRewards = 20
+nRewards = 50
 rewardMin = 1.9
 rewardMax = 2.1
 avg4reward = 5
@@ -98,8 +99,10 @@ with multiprocessing.Pool(processes=num_cores) as pool:
 
 t2 = time.time()
 print("Task 2 done in {0}seconds".format(t2-t1))
+np.savez_compressed(folder+"data2.npz", x=rewardList, y=fPercentaje)
 plt.figure(figsize=(16, 9))
 plt.plot(rewardList, fPercentaje)
+# plt.plot(rewardList, poTotal)
 plt.axis([0, 3., -1, 101])
 # plt.show()
 plt.savefig(folder + "f_of_b")
@@ -107,6 +110,59 @@ plt.close()
 t3 = time.time()
 print("All done in {0}seconds".format(t3-t0))
 
+#=============
+#   3rd Task
+#=============
+
+'''dd
+steps = 100
+nRewards = 10
+rewardMin = 1.9
+rewardMax = 2.1
+avg4reward = 5
+rewardList = np.linspace(rewardMin, rewardMax, nRewards)
+rewardList[0] = 0.5
+rewardList[1] = 1.0
+rewardList[2] = 1.5
+rewardList[nRewards-1] = 2.5
+fPercentaje = np.zeros(shape=rewardList.shape)
+myData = [steps, avg4reward, N, folder]
+
+decisionGrid = np.random.choice(2, size=(N, N))
+plt.figure(0, figsize=(7, 7))
+plt.clf()
+plt.figure(1, figsize=(7, 7))
+plt.clf()
+num_cores = int(multiprocessing.cpu_count())
+
+plt.figure(0)
+plt.close()
+plt.figure(1)
+plt.close()
+
+print("Data setup")
+with multiprocessing.Pool(processes=num_cores) as pool:
+    do_all_grids = partial(u.doAllPayOff, data = myData)
+    print("function partialised")
+    payOffArray = pool.map(do_all_grids, rewardList)
+
+t2 = time.time()
+print("Task 2 done in {0}seconds".format(t2-t1))
+np.savez_compressed('PayOff_data', payOffArray)
+plt.figure(figsize=(16, 9))
+print(len(payOffArray))
+print(type(payOffArray[0]))
+for i in range(nRewards):
+    plt.plot(range(len(payOffArray[i])), payOffArray[i], label=str(rewardList[i]))
+# plt.plot(rewardList, poTotal)
+# plt.axis([0, 3., -1, 101])
+plt.legend()
+plt.savefig(folder + "payOff_time.png")
+plt.show()
+# plt.close()
+t3 = time.time()
+print("All done in {0}seconds".format(t3-t0))
+'''
 '''
 #=============
 #   2nd Task

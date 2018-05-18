@@ -137,3 +137,89 @@ def doAll(reward, data):
         reward_f[j] = sum(sum(np.logical_not(decisionGrid)))
         # j
     return np.average(reward_f) * 100 / np.square(N)
+
+
+def doAllCommunity(reward, data):
+    steps = data[0]
+    avg4reward = data[1]
+    N = data[2]
+    folder = data[3]
+    communities = createCommunities(N, 0)
+    decisionGrid = np.random.choice(2, size=(N, N))
+    plt.figure(0, figsize=(7, 7))
+    plt.clf()
+    plt.figure(1, figsize=(7, 7))
+    plt.clf()
+    stepsRward = int(1. / abs(reward - 2.)) + 50
+    payOff_total = np.zeros(shape=(stepsRward))
+    payOff_j = np.zeros(shape=(avg4reward, stepsRward))
+    for j in range(avg4reward):
+        for i in range(stepsRward):
+            # namePO = "Pay_Off_grid_{0:.2f}_{1:3d}".format(reward, i)
+            payOff = getPayOff(decisionGrid, reward)
+            newdecisionGrid = updateDecisionGrid(decisionGrid, payOff)
+            if valueCom:
+                decisionGrid = (newdecisionGrid * (not communities)) + communities
+            else:
+                decisionGrid = newdecisionGrid * communities
+            if reward < 2 and reward > 1.9:
+                payOff_j[j] = sum(sum((payOff))) / (N*N)
+            # i
+        payOff_total = np.average(payOff_j, axis=0)
+        # j
+    # plt.plot(range(stepsRward), payOff_total)
+    # plt.savefig(folder + 'PayOff.png')
+    # plt.close()
+    # totalPO = np.average(payOff_f)
+    return payOff_total
+
+
+
+
+def doAllPayOff(reward, data):
+    steps = data[0]
+    avg4reward = data[1]
+    N = data[2]
+    folder = data[3]
+    decisionGrid = np.random.choice(2, size=(N, N))
+    plt.figure(0, figsize=(7, 7))
+    plt.clf()
+    plt.figure(1, figsize=(7, 7))
+    plt.clf()
+    stepsRward = int(1. / abs(reward - 2.)) + 50
+    payOff_total = np.zeros(shape=(stepsRward))
+    payOff_j = np.zeros(shape=(avg4reward, stepsRward))
+    for j in range(avg4reward):
+        for i in range(stepsRward):
+            namePO = "Pay_Off_grid_{0:.2f}_{1:3d}".format(reward, i)
+            payOff = getPayOff(decisionGrid, reward)
+            newdecisionGrid = updateDecisionGrid(decisionGrid, payOff)
+            decisionGrid = newdecisionGrid  # * communities
+            if reward < 2 and reward > 1.9:
+                payOff_j[j] = sum(sum((payOff))) / (N*N)
+            # i
+        payOff_total = np.average(payOff_j, axis=0)
+        # j
+    plt.plot(range(stepsRward), payOff_total)
+    plt.savefig(folder + 'PayOff.png')
+    plt.close()
+    # totalPO = np.average(payOff_f)
+    return payOff_total
+
+
+def createCommunities(N, value):
+    if value:
+        communities = np.ones(N/10)
+        decisionGrid = np.zeros(2, size=(N,N))
+    else:
+        community = np.zeros(N/10)
+        decisionGrid = np.ones(2, size=(N,N))
+    jArray = np.random.randint(N-12, size=5)
+    for i in np.random.randint(N-12, size=5):
+        j = jArray[i]
+        decisionGrid[i:i+11][j:j+11] = community
+
+    return decisionGrid
+
+
+
