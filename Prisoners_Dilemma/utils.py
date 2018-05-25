@@ -99,7 +99,7 @@ def shiftPB(original, shift):
 
 def doAll(reward, data):
     steps = data[0]
-    avg4reward = data[1]
+    avg4reward = 1  # data[1]
     N = data[2]
     folder = data[3]
     decisionGrid = np.random.choice(2, size=(N, N))
@@ -107,9 +107,13 @@ def doAll(reward, data):
     plt.clf()
     plt.figure(1, figsize=(7, 7))
     plt.clf()
-    stepsRward = int(1. / abs(reward - 2.)) + 50
+    if reward > 1.7:
+        stepsRward = 100  # int(1. / abs(reward - 2.)) + 50
+    else:
+        stepsRward = 50  # int(1. / abs(reward - 2.)) + 50
     reward_f = np.zeros(avg4reward)
     for j in range(avg4reward):
+        decisionGrid = np.random.choice(2, size=(N, N))
         for i in range(stepsRward):
             # namePO = "Pay_Off_grid_{0:.2f}_{1:3d}".format(reward, i)
             payOff = getPayOff(decisionGrid, reward)
@@ -123,12 +127,12 @@ def doAll(reward, data):
                     (1.5 * np.logical_not(decisionGrid) * newdecisionGrid) +
                     (0.25 * decisionGrid * np.logical_not(newdecisionGrid)))
 
-            if i >= stepsRward-5:
-                nameDec = ("Decision_grid_{0:.2f}_{1:3d}".
-                        format(reward, i))
+            if j == 0:
+                nameDec = ("Decision_grid_{0:.2f}_{1}".
+                        format(reward, str(i).zfill(3)))
                 plt.figure(1)
                 plt.imshow(toPlot, interpolation='nearest', cmap='gist_stern')
-                if i == steps-5:
+                if i == 0:
                     plt.colorbar()
                 plt.savefig(folder + nameDec + '.png')
             decisionGrid = newdecisionGrid
@@ -174,10 +178,8 @@ def doAllCommunity(reward, data):
     return payOff_total
 
 
-
-
 def doAllPayOff(reward, data):
-    steps = data[0]
+    # steps = data[0]
     avg4reward = data[1]
     N = data[2]
     folder = data[3]
@@ -191,7 +193,7 @@ def doAllPayOff(reward, data):
     payOff_j = np.zeros(shape=(avg4reward, stepsRward))
     for j in range(avg4reward):
         for i in range(stepsRward):
-            namePO = "Pay_Off_grid_{0:.2f}_{1:3d}".format(reward, i)
+            # namePO = "Pay_Off_grid_{0:.2f}_{1:3d}".format(reward, i)
             payOff = getPayOff(decisionGrid, reward)
             newdecisionGrid = updateDecisionGrid(decisionGrid, payOff)
             decisionGrid = newdecisionGrid  # * communities
@@ -201,6 +203,7 @@ def doAllPayOff(reward, data):
         payOff_total = np.average(payOff_j, axis=0)
         # j
     plt.plot(range(stepsRward), payOff_total)
+    plt.show()
     plt.savefig(folder + 'PayOff.png')
     plt.close()
     # totalPO = np.average(payOff_f)

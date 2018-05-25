@@ -17,13 +17,13 @@ folder = os.path.abspath('./') + '/Data1/'
 t0 = time.time()
 sizeHalf = 100
 N = (sizeHalf * 2) + 1
-steps = 200
+steps = 60
 
 #==================
 #    1st Task
 #==================
 
-rewardList = [1.9, 2.00, 2.08]
+rewardList = [1.3, 1.70, 1.9, 2.3]
 for reward in rewardList:
     decisionGrid = np.ones(shape=(N, N))
     decisionGrid[sizeHalf][sizeHalf] = 0
@@ -33,8 +33,8 @@ for reward in rewardList:
     plt.clf()
 
     for i in range(steps):
-        namePO = "Pay_Off_grid_{0:.2f}_{1:03d}".format(reward, i)
-        nameDec = "Decision_grid_{0:.2f}_{1:03d}".format(reward, i)
+        namePO = "Pay_Off_grid_{0:.2f}_{1}".format(reward, str(i).zfill(3))
+        nameDec = "Decision_grid_{0:.2f}_{1}".format(reward, str(i).zfill(3))
         payOff = u.getPayOff(decisionGrid, reward)
         newdecisionGrid = u.updateDecisionGrid(decisionGrid, payOff)
         plt.figure(0)
@@ -67,15 +67,18 @@ print("Finished task 1 in {0}seconds".format(t1-t0))
 folder = os.path.abspath('./') + '/Data2/'
 
 steps = 100
-nRewards = 50
-rewardMin = 1.9
+nRewards = 20
+rewardMin = 1.7
 rewardMax = 2.1
-avg4reward = 5
+avg4reward = 40
 rewardList = np.linspace(rewardMin, rewardMax, nRewards)
-rewardList[0] = 0.5
-rewardList[1] = 1.0
-rewardList[2] = 1.5
-rewardList[nRewards-1] = 2.5
+# rewardList[0] = 1.3
+# rewardList[1] = 1.7
+# rewardList[2] = 1.9
+# rewardList[3] = 2.0
+# rewardList[4] = 2.08
+# rewardList[nRewards-1] = 2.5
+#rewardList = [1.3, 1.7, 1.9, 2., 2.08]
 fPercentaje = np.zeros(shape=rewardList.shape)
 myData = [steps, avg4reward, N, folder]
 
@@ -84,7 +87,7 @@ plt.figure(0, figsize=(7, 7))
 plt.clf()
 plt.figure(1, figsize=(7, 7))
 plt.clf()
-num_cores = int(multiprocessing.cpu_count()-1)
+num_cores = int(multiprocessing.cpu_count())
 
 plt.figure(0)
 plt.close()
@@ -113,8 +116,8 @@ print("All done in {0}seconds".format(t3-t0))
 #=============
 #   3rd Task
 #=============
+'''
 
-'''dd
 steps = 100
 nRewards = 10
 rewardMin = 1.9
@@ -153,7 +156,8 @@ plt.figure(figsize=(16, 9))
 print(len(payOffArray))
 print(type(payOffArray[0]))
 for i in range(nRewards):
-    plt.plot(range(len(payOffArray[i])), payOffArray[i], label=str(rewardList[i]))
+    plt.plot(range(len(payOffArray[i])), payOffArray[i], 
+             label=str(rewardList[i]))
 # plt.plot(rewardList, poTotal)
 # plt.axis([0, 3., -1, 101])
 plt.legend()
@@ -162,8 +166,6 @@ plt.show()
 # plt.close()
 t3 = time.time()
 print("All done in {0}seconds".format(t3-t0))
-'''
-'''
 #=============
 #   2nd Task
 #=============
