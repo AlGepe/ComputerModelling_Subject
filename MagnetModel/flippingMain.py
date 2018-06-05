@@ -80,10 +80,13 @@ while not(flipCandidates.empty()):
     flipCandidates.append([i[0] - 1, i[1] - 1])
     flipCandidates.append([i[0] - 1, i[1]    ])
     flipCandidates.append([i[0] - 1, i[1] + 1])
+    if s[i] == -1:
+        s[i] += 2
+
     # if spin not flipped
         # flip spin
     # update local fields
-    # append all unflipped neighbours with positive local fields 
+    # append all unflipped neighbours with positive local fields
 
 
 flipCandidates.append([itrig[0] + 1, itrig[1] - 1])
