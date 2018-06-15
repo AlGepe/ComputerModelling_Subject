@@ -1,5 +1,6 @@
 import networkx as nx
 from pylab import *
+from matplotlib import pyplot as plt
 import numpy as np
 import math
 
@@ -124,8 +125,8 @@ def zacharyCondt(g):
 
 
 g = nx.karate_club_graph()
-g = zacharyCondt(g)
-# g = stdInitCond(g)
+# g = zacharyCondt(g)
+g = stdInitCond(g)
 # print(g.node[0])
 # print(g.node[33])
 
@@ -137,14 +138,16 @@ g = zacharyCondt(g)
 # Iterations
     # solve ODE for clubs
     # solver ODE for edges
-for i in range(1000):
+for i in range(5000):
     g = doTimeStep(g, 0.01)
-    if not(i%100):
+    if not(i%10):
         # print(g.nodes(data=True))
-        print(g.edges(data=True))
+        # print(g.edges(data=True))
+        print(i)
         nx.draw_spring(g, cmap = cm.cool, vmin = 0, vmax = 1,
                         with_labels = True,
                         node_color = [g.node[i]['state'] for i in g.nodes()],
                         edge_cmap = cm.binary, edge_vmin = 0, edge_vmax = 1,
                         edge_color = [g[i][j]['weight'] for i, j in g.edges])
-        show()
+        plt.savefig('Std_karate_{0:04d}'.format(i))
+        plt.clf()
